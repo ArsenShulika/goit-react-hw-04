@@ -1,6 +1,5 @@
 import Modal from 'react-modal';
 Modal.setAppElement('#root');
-import css from './ImageModal.module.css';
 
 const customStyles = {
   content: {
@@ -24,12 +23,11 @@ function ImageModal({ closeModal, modalIsOpen, photo }) {
       style={customStyles}
       contentLabel="Example Modal"
       closeTimeoutMS={400}
-      className={css.modal}
     >
       <img src={photo.urls.regular} alt={photo.alt_description} />
-      <div className={css.modalInfo}>
-        <p className={css.modalText}>{photo.alt_description}</p>
-        <p className={css.modalText}>Author: {photo.user.name}</p>
+      <div>
+        <p>{photo.alt_description}</p>
+        <p>Author: {photo.user.name}</p>
       </div>
     </Modal>
   );
