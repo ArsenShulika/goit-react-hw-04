@@ -13,6 +13,5 @@ export const getPhotos = async (topic, currentPage) => {
       orientation: 'landscape',
     },
   });
-  console.log(response.data.results);
-  return response.data.results;
+  return response.data;
 };

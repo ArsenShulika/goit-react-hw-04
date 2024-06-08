@@ -6,6 +6,7 @@ import SearchBar from '../SearchBar/SearchBar.jsx';
 import ImageGallery from '../ImageGallery/ImageGallery';
 import ErrorMessage from '../ErrorMessage/ErrorMessage.jsx';
 import ImageModal from '../ImageModal/ImageModal.jsx';
+import LoadMoreBtn from '../LoadMoreBtn/LoadMoreBtn.jsx';
 
 export default function App() {
   const [photos, setPhotos] = useState([]);
@@ -13,11 +14,9 @@ export default function App() {
   const [isError, setIsError] = useState(false);
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
-  const [totalPages, setTotalPages] = useState(1);
-
+  const [showBtn, setShowBtn] = useState(false);
   const [modalIsOpen, setIsOpen] = useState(false);
-  const [modalImageSrc, setModalImageSrc] = useState('');
-  const [modalImageAlt, setModalImageAlt] = useState('');
+  const [modalImage, setModalImage] = useState('');
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
@@ -27,17 +26,18 @@ export default function App() {
       try {
         setIsLoading(true);
         setIsError(false);
-        const data = await getPhotos(searchQuery, page);
-        setPhotos(prevState => [...prevState, ...data]);
-        setTotalPages(data.total_pages);
+        const { results, total_pages } = await getPhotos(searchQuery, page);
+        setPhotos(prevState => [...prevState, ...results]);
+        setShowBtn(total_pages && total_pages !== page);
       } catch (error) {
         setIsError(true);
       } finally {
         setIsLoading(false);
+        setIsError(false);
       }
     }
     fetchPhotos();
-  }, [page, searchQuery, totalPages]);
+  }, [page, searchQuery]);
 
   const handleSearch = async topic => {
     setSearchQuery(topic);
@@ -49,40 +49,38 @@ export default function App() {
     setPage(page + 1);
   };
 
-  function openModal(imgUrl, alt) {
+  function openModal() {
     setIsOpen(true);
-    setModalImageSrc(imgUrl);
-    setModalImageAlt(alt);
   }
 
   function closeModal() {
     setIsOpen(false);
-    setModalImageSrc('');
-    setModalImageAlt('');
+  }
+
+  function afterOpenModal(topic) {
+    setModalImage(topic);
   }
 
   return (
     <div className={css.container}>
       <SearchBar onSearch={handleSearch} />
-      {isLoading && <Loader />}
       {isError && <ErrorMessage />}
-      {photos.length > 0 && <ImageGallery items={photos} onClick={openModal} />}
-      <ImageModal photos={photos} />
-      {photos.length > 0 && !isLoading && (
-        <button
-          className={css.btn}
-          onClick={handleLoadMore}
-          disabled={page === totalPages}
-        >
-          Load more..
-        </button>
+      {photos.length > 0 && (
+        <ImageGallery
+          items={photos}
+          openModal={openModal}
+          onAfterOpen={afterOpenModal}
+        />
       )}
-      <ImageModal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        modalImageUrl={modalImageSrc}
-        modalImageAlt={modalImageAlt}
-      />
+      {isLoading && <Loader />}
+      {showBtn && <LoadMoreBtn onLoadMore={handleLoadMore} />}
+      {modalIsOpen && (
+        <ImageModal
+          closeModal={closeModal}
+          modalIsOpen={modalIsOpen}
+          photo={modalImage}
+        />
+      )}
     </div>
   );
 }

@@ -31,6 +31,8 @@ export default function SearchBar({ onSearch }) {
           <Field
             type="text"
             name="query"
+            autoComplete="off"
+            autoFocus
             placeholder="Search images and photos"
           />
           <button type="submit">Search</button>
