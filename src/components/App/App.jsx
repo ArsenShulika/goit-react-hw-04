@@ -49,16 +49,13 @@ export default function App() {
     setPage(page + 1);
   };
 
-  function openModal() {
+  function openModal(topic) {
     setIsOpen(true);
+    setModalImage(topic);
   }
 
   function closeModal() {
     setIsOpen(false);
-  }
-
-  function afterOpenModal(topic) {
-    setModalImage(topic);
   }
 
   return (
@@ -66,11 +63,7 @@ export default function App() {
       <SearchBar onSearch={handleSearch} />
       {isError && <ErrorMessage />}
       {photos.length > 0 && (
-        <ImageGallery
-          items={photos}
-          openModal={openModal}
-          onAfterOpen={afterOpenModal}
-        />
+        <ImageGallery items={photos} openModal={openModal} />
       )}
       {isLoading && <Loader />}
       {showBtn && <LoadMoreBtn onLoadMore={handleLoadMore} />}

@@ -29,13 +29,16 @@ export default function SearchBar({ onSearch }) {
       >
         <Form className={css.form}>
           <Field
+            className={css.input}
             type="text"
             name="query"
             autoComplete="off"
             autoFocus
             placeholder="Search images and photos"
           />
-          <button type="submit">Search</button>
+          <button className={css.btn} type="submit">
+            Search
+          </button>
           <Toaster position="top-right" reverseOrder={false} />
         </Form>
       </Formik>
